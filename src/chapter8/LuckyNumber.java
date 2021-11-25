@@ -56,12 +56,13 @@ public class LuckyNumber extends Application
     {
     	Model model = new Model();
     	
-    	model.addObserver(new FrequencyObserver(model));
+    	// model.addObserver(new FrequencyObserver(model));
     	
     	GridPane root = createPane(); // The root of the GUI component graph
     	root.add(new SliderPanel(model), 0, 0, 1, 1);
     	root.add(new IntegerPanel(model), 0, 1, 1, 1);
     	root.add(new TextPanel(model), 0, 2, 1, 1);
+    	root.add(new RomanTextPanel(model), 0, 3, 1, 1);
     	
     	pPrimaryStage.setTitle("Lucky Number");
     	pPrimaryStage.setResizable(false);
@@ -289,6 +290,56 @@ class TextPanel extends HBox implements Observer
 					}
 				}
 				aModel.setNumber(lIndex + 1);
+			}
+		});
+	}
+
+	@Override
+	public void newNumber(int pNumber)
+	{
+		aText.setText(LABELS[pNumber - 1]);
+		
+	}
+}
+
+/**
+ * Concrete observer that displays the model data
+ * as a written-out number in a text field.
+ */
+class RomanTextPanel extends HBox implements Observer
+{
+	private static final String[] LABELS = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+	
+	private TextField aText = new TextField();
+	private Model aModel;
+	
+	/**
+	 * @param pModel The model observed by this panel.
+	 */
+	RomanTextPanel(Model pModel)
+	{
+		aModel = pModel;
+		aModel.addObserver(this);
+		aText.setMinWidth(LuckyNumber.WIDTH);
+		aText.setText(LABELS[aModel.getNumber() - 1]);
+		getChildren().add(aText);
+		
+		
+		aText.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent pEvent)
+			{
+				int lIndex = 0;
+				for( int i = 0; i < LABELS.length; i++)
+				{
+					if(aText.getText().equalsIgnoreCase(LABELS[i]))
+					{
+						lIndex = i + 1;
+						break;
+					}
+				}
+				aModel.setNumber(lIndex);
 			}
 		});
 	}
